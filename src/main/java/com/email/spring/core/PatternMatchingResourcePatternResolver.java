@@ -14,6 +14,8 @@ public class PatternMatchingResourcePatternResolver extends DefaultResourceLoade
 
     private static final String CLASSPATH_ALL_URL_PREFIX = "classpath*:";
 
+    public PatternMatchingResourcePatternResolver() {}
+
     @Override
     public Resource[] getResources(String locationPattern) throws IOException {
         try {
