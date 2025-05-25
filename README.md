@@ -32,6 +32,7 @@
     - [ ] Related methods for `BeanFactory`
     - [ ] Support for `@Lazy`
     - [ ] Related attributes in `@Bean`
+- [ ] Add `@Primary` and its support
 - [ ] `Aware`, `InitializingBean` & `DestroyBean`
 ### 2. AOP
 Scheduling...
