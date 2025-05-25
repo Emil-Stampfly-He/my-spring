@@ -55,7 +55,7 @@ public class ComponentScanPostProcessor implements BeanFactoryPostProcessor {
                             if (hasComponent || hasComponentDerivative) {
                                 BeanDefinition beanDefinition = BeanDefinitionBuilder
                                         .genericBeanDefinition(clazz, className)
-                                        .setScope(ScopeName.SINGLETON)
+                                        .setScope(ScopeName.SINGLETON) // 使用@Component及其衍生注解都是单例的
                                         .beanDefinition();
                                 String beanName = generateBeanName(beanDefinition, beanFactory);
                                 beanFactory.registerBeanDefinition(beanName, beanDefinition);
@@ -69,12 +69,11 @@ public class ComponentScanPostProcessor implements BeanFactoryPostProcessor {
         }
     }
 
-    // TODO: 修改一下命名。目前命名会变成这样 com.email.spring.test.MyComponent$com.email.spring.bean.factory.DefaultBeanFactory
     private static String generateBeanName(BeanDefinition beanDefinition, BeanDefinitionRegistry beanFactory) {
-        String beanClassName = beanDefinition.getBeanClassName();
-        String trueBeanName = firstLetterToLowerCase(beanClassName);
-        String beanFactoryString = beanFactory.toString();
-        return trueBeanName + "$" + beanFactoryString;
+        String[] split = beanDefinition.getBeanClassName().split("\\.");
+        String trueBeanName = firstLetterToLowerCase(split[split.length - 1]);
+        String[] beanFactoryStringSplit = beanFactory.toString().split("\\.");
+        return trueBeanName + "$" + beanFactoryStringSplit[beanFactoryStringSplit.length - 1];
     }
 
     private static String firstLetterToLowerCase(String str) {

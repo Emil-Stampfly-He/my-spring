@@ -7,6 +7,7 @@ import com.email.spring.bean.factory.config.ComponentScanPostProcessor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+@SuppressWarnings("unchecked")
 public class JointDebugging {
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
         DefaultBeanFactory beanFactory = new DefaultBeanFactory();
@@ -17,6 +18,8 @@ public class JointDebugging {
         beanDefinitionMap.setAccessible(true);
         HashMap<String, BeanDefinition> stringBeanDefinitionHashMap = (HashMap<String, BeanDefinition>) beanDefinitionMap.get(beanFactory);
 
-        System.out.println(stringBeanDefinitionHashMap);
+        stringBeanDefinitionHashMap.forEach((k, v) -> {
+            System.out.println(k + ": " + v);
+        });
     }
 }
