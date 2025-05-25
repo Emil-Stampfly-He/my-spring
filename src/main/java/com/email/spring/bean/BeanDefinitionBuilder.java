@@ -1,49 +1,34 @@
 package com.email.spring.bean;
 
-public class BeanDefinitionBuilder {
+public record BeanDefinitionBuilder(BeanDefinition beanDefinition) {
 
-    private final BeanDefinition beanDefinition;
-
-    public BeanDefinitionBuilder(BeanDefinition beanDefinition) {
-        this.beanDefinition = beanDefinition;
-    }
-
-    public BeanDefinitionBuilder genericBeanDefinition() {
+    public static BeanDefinitionBuilder genericBeanDefinition() {
         return new BeanDefinitionBuilder(new SimpleBeanDefinition());
     }
 
-    public BeanDefinitionBuilder genericBeanDefinition(Class<?> beanClass) {
-        BeanDefinitionBuilder builder = new BeanDefinitionBuilder(new SimpleBeanDefinition());
-        builder.beanDefinition.setBeanClass(beanClass);
-        return builder;
+    public static BeanDefinitionBuilder genericBeanDefinition(Class<?> beanClass) {
+        return genericBeanDefinition()
+                .setBeanClass(beanClass);
     }
 
-    public BeanDefinitionBuilder genericBeanDefinition(Class<?> beanClass, String beanName) {
-        BeanDefinitionBuilder builder = new BeanDefinitionBuilder(new SimpleBeanDefinition());
-        builder.beanDefinition.setBeanClass(beanClass);
-        builder.beanDefinition.setBeanClassName(beanName);
-        return builder;
+    public static BeanDefinitionBuilder genericBeanDefinition(Class<?> beanClass, String beanName) {
+        return genericBeanDefinition()
+                .setBeanClass(beanClass)
+                .setBeanClassName(beanName);
     }
 
     public BeanDefinitionBuilder setBeanClass(Class<?> beanClass) {
-        BeanDefinitionBuilder builder = new BeanDefinitionBuilder(new SimpleBeanDefinition());
-        builder.beanDefinition.setBeanClass(beanClass);
-        return builder;
+        this.beanDefinition.setBeanClass(beanClass);
+        return this;
     }
 
     public BeanDefinitionBuilder setBeanClassName(String beanName) {
-        BeanDefinitionBuilder builder = new BeanDefinitionBuilder(new SimpleBeanDefinition());
-        builder.beanDefinition.setBeanClassName(beanName);
-        return builder;
+        this.beanDefinition.setBeanClassName(beanName);
+        return this;
     }
 
     public BeanDefinitionBuilder setScope(ScopeName scope) {
-        BeanDefinitionBuilder builder = new BeanDefinitionBuilder(new SimpleBeanDefinition());
-        builder.beanDefinition.setScope(scope);
-        return builder;
-    }
-
-    public BeanDefinition getBeanDefinition() {
-        return beanDefinition;
+        this.beanDefinition.setScope(scope);
+        return this;
     }
 }
