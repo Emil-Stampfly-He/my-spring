@@ -1,13 +1,9 @@
 <div align="center">
-    <h1>
-        iSpring&nbsp;🍃&nbsp
-    </h1>
+   <div align="center">
+  <h1>iSpring 🍃</h1>
+  <h3>A not-so-minimal Spring framework model</h3>
 </div>
 
-<div align="center">
-    <h3> 
-        A not-so-minimal Spring framework model
-    </h3>
 </div>
 
 ---
