@@ -43,7 +43,7 @@ public class ConfigurationClassPostProcessor implements BeanFactoryPostProcessor
                             if (clazz.isAnnotation()) continue;
                             Map<String, Object> configurationAttributes = mtd.getAttributes(ANNOTATION_CONFIGURATION);
 
-                            // TODO: 应当遍历Map中的所有属性，为所有属性创建单独的逻辑，以下只关注了@Configuration的name属性
+                            // TODO: 未来应当遍历Map中的所有属性，为所有属性创建单独的逻辑，以下只关注了@Configuration的name属性
                             String beanNameConfigurationPart = (String) configurationAttributes.get("name");
 
                             boolean hasConfiguration = mtd.hasAnnotation(ANNOTATION_CONFIGURATION);

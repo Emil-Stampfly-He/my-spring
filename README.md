@@ -15,7 +15,7 @@
 - [x] `BeanDefinition` & `Resource`
 - [x] Basic `BeanFactory` & `ApplicationContext`
 - [x] `BeanFactoryPostProcessor` for `@ComponentScan`， `@Component` & its derivative annotations
-- [ ] `BeanFactoryPostProcessor` for `@Configuration`, `@Bean` & `@Scope`
+- [x] `BeanFactoryPostProcessor` for `@Configuration`, `@Bean` & `@Scope`
 - [ ] `BeanPostProcessor` for `@Autowired`
 - [ ] `BeanPostProcessor` for `@Resource`
 - [ ] Add `initMethod` & `destroyMethod` for Beans
