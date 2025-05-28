@@ -16,15 +16,16 @@
 - [x] Basic `BeanFactory` & `ApplicationContext`
 - [x] `BeanFactoryPostProcessor` for `@ComponentScan`， `@Component` & its derivative annotations
 - [x] `BeanFactoryPostProcessor` for `@Configuration`, `@Bean` & `@Scope`
-- [ ] `BeanPostProcessor` for `@Autowired`
-  - [ ] `postProcessProperties`
-  - [ ] `InjectionMetadata` & `InjectedElements`
+- [x] `BeanPostProcessor` for `@Autowired`
+  - [x] `postProcessBeforeInitialization`
+  - [x] `InjectionMetadata` & `InjectedElements`
 - [ ] `BeanPostProcessor` for `@Resource`
 - [ ] Add `initMethod` & `destroyMethod` for Beans
   - [ ] Getter & setter for `BeanDefinitionBuilder` & `BeanDefinition`
   - [ ] Related methods for `BeanFactory`
   - [ ] Support for `@PostConstruct` & `@PreDestroy` together with `@Resource`
   - [ ] `initMethod` & `destroyMethod` attributes in `@Bean`
+  - [ ] `postProcessAfterInitialization`
 - [ ] Add `lazyInit` for Beans
     - [ ] Getter & setter for `BeanDefinitionBuilder` & `BeanDefinition`
     - [ ] Related methods for `BeanFactory`

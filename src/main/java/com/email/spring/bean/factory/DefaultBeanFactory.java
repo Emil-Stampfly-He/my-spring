@@ -1,6 +1,7 @@
 package com.email.spring.bean.factory;
 
 import com.email.spring.bean.BeanDefinition;
+import com.email.spring.bean.factory.config.BeanPostProcessor;
 import com.email.spring.bean.factory.config.BeansException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +18,9 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     // Bean依赖图
     private final Map<String, Set<String>> dependenciesForBeanMap = new HashMap<>();
     private final Map<String, Set<String>> dependentBeanMap = new HashMap<>();
+
+    // BeanPostProcessor
+    private final Set<BeanPostProcessor> beanPostProcessors = new HashSet<>();
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
@@ -79,7 +83,6 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     }
 
     // TODO: getBean方法以后可能需要返回代理对象
-
     @Override
     public Object getBean(String beanName) {
         if (this.singletonBeanMap.containsKey(beanName)) {
@@ -155,5 +158,16 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     @Override
     public boolean isPrototype(String beanName) {
         return !this.singletonBeanMap.containsKey(beanName);
+    }
+
+    // 用于将beanFactory中的所有Bean都经过Bean后处理器进行处理
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        this.beanPostProcessors.add(beanPostProcessor);
+        for (BeanPostProcessor bp : this.beanPostProcessors) {
+            this.beanDefinitionMap.forEach(
+                    (beanName, beanDefinition)
+                            -> bp.postProcessBeforeInitialization(this.getBean(beanName), beanDefinition.getBeanClassName())
+            );
+        }
     }
 }

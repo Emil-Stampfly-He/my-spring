@@ -12,6 +12,19 @@ import java.util.HashMap;
 @SuppressWarnings("unchecked")
 public class JointDebugging {
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException {
+        DefaultBeanFactory beanFactory = getDefaultBeanFactory();
+
+        MyController myController = beanFactory.getBean(MyController.class);
+        System.out.println(myController.getBean1());
+        System.out.println();
+
+        Field beanDefinitionMap = beanFactory.getClass().getDeclaredField("beanDefinitionMap");
+        beanDefinitionMap.setAccessible(true);
+        HashMap<String, BeanDefinition> stringBeanDefinitionHashMap = (HashMap<String, BeanDefinition>) beanDefinitionMap.get(beanFactory);
+        stringBeanDefinitionHashMap.forEach((k, v) -> System.out.println(k + " = " + v + ": " + v.getScope()));
+    }
+
+    private static DefaultBeanFactory getDefaultBeanFactory() {
         DefaultBeanFactory beanFactory = new DefaultBeanFactory();
 
         // BeanFactoryPostProcessor
@@ -22,17 +35,11 @@ public class JointDebugging {
         configurationClassPostProcessor.postProcessBeanDefinitionRegistry(beanFactory);
 
         // BeanPostProcessor
-        MyController myController = new MyController();
         AutowiredAnnotationPostProcessor autowiredAnnotationPostProcessor = new AutowiredAnnotationPostProcessor();
         autowiredAnnotationPostProcessor.setBeanFactory(beanFactory);
-        autowiredAnnotationPostProcessor.postProcessBeforeInitialization(myController, "myController");
+        // 注册BeanPostProcessor，让BeanPostProcessor生效
+        beanFactory.addBeanPostProcessor(autowiredAnnotationPostProcessor);
 
-        System.out.println(myController.getBean1());
-        System.out.println();
-
-        Field beanDefinitionMap = beanFactory.getClass().getDeclaredField("beanDefinitionMap");
-        beanDefinitionMap.setAccessible(true);
-        HashMap<String, BeanDefinition> stringBeanDefinitionHashMap = (HashMap<String, BeanDefinition>) beanDefinitionMap.get(beanFactory);
-        stringBeanDefinitionHashMap.forEach((k, v) -> System.out.println(k + " = " + v + ": " + v.getScope()));
+        return beanFactory;
     }
 }
