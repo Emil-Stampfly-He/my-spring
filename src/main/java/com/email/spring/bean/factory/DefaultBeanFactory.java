@@ -1,6 +1,7 @@
 package com.email.spring.bean.factory;
 
 import com.email.spring.bean.BeanDefinition;
+import com.email.spring.bean.factory.config.BeansException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,6 +13,10 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
     private final Map<String, Object> singletonBeanMap = new HashMap<>();
+
+    // Bean依赖图
+    private final Map<String, Set<String>> dependenciesForBeanMap = new HashMap<>();
+    private final Map<String, Set<String>> dependentBeanMap = new HashMap<>();
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
@@ -26,14 +31,25 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
             }
 
             this.beanDefinitionMap.put(beanName, beanDefinition);
-            if (beanDefinition.isSingleton()) {
-                this.singletonBeanMap.put(beanName, beanDefinition.getBeanClass());
-            }
+            putSingletonBeanMap(beanName, beanDefinition);
         }
 
         this.beanDefinitionMap.put(beanName, beanDefinition);
         if (beanDefinition.isSingleton()) {
-            this.singletonBeanMap.put(beanName, beanDefinition.getBeanClass());
+            putSingletonBeanMap(beanName, beanDefinition);
+        }
+    }
+
+    private void putSingletonBeanMap(String beanName, BeanDefinition beanDefinition) {
+        if (beanDefinition.isSingleton()) {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            Object beanInstance;
+            try {
+                beanInstance = beanClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new BeansException("Failed to instantiate " + beanClass);
+            }
+            this.singletonBeanMap.put(beanName, beanInstance);
         }
     }
 
@@ -66,7 +82,64 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
 
     @Override
     public Object getBean(String beanName) {
-        return this.beanDefinitionMap.get(beanName).getBeanClass();
+        if (this.singletonBeanMap.containsKey(beanName)) {
+            return this.singletonBeanMap.get(beanName);
+        }
+
+        BeanDefinition bd = beanDefinitionMap.get(beanName);
+        if (bd == null) {
+            throw new NoSuchBeanDefinitionException(beanName);
+        }
+
+        Class<?> beanClass = bd.getBeanClass();
+        Object bean;
+        try {
+            bean = beanClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new BeansException("Failed to instantiate bean: " + beanName);
+        }
+
+        return bean;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T getBean(Class<T> requiredType) {
+        // 1. 在单例缓存中寻找
+        for (Object obj : this.singletonBeanMap.values()) {
+            if (requiredType.isInstance(obj)) {
+                return (T) obj;
+            }
+        }
+
+        // 2. beanDefinitionMap里寻找唯一匹配
+        String name = this.getBeanNameForType(requiredType);
+        return (T) this.getBean(name);
+    }
+
+    public String getBeanNameForType(Class<?> requiredType) {
+        String found = null;
+        for (Map.Entry<String, BeanDefinition> entry : this.beanDefinitionMap.entrySet()) {
+            if (requiredType.isAssignableFrom(entry.getValue().getBeanClass())) {
+                if (found != null) {
+                    throw new NoSuchBeanDefinitionException("Expected single matching bean but found two: " + requiredType);
+                }
+                found = entry.getKey();
+            }
+        }
+        if (found == null) {
+            throw new NoSuchBeanDefinitionException("No such bean: " + requiredType);
+        }
+        return found;
+    }
+
+    public void registerDependentBean(String beanName, String dependentBeanName) {
+        this.dependenciesForBeanMap
+                .computeIfAbsent(beanName, k -> new HashSet<>())
+                .add(dependentBeanName);
+        this.dependentBeanMap
+                .computeIfAbsent(beanName, k -> new HashSet<>())
+                .add(beanName);
     }
 
     @Override

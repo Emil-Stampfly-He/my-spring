@@ -67,6 +67,11 @@ public class SimpleApplicationContext extends DefaultResourceLoader
     }
 
     @Override
+    public <T> T getBean(Class<T> requiredType) {
+        return this.beanFactory.getBean(requiredType);
+    }
+
+    @Override
     public boolean containsBean(String beanName) {
         return this.beanFactory.containsBean(beanName);
     }

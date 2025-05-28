@@ -47,7 +47,7 @@ public class ComponentScanPostProcessor implements BeanFactoryPostProcessor {
                                         .genericBeanDefinition(clazz, className)
                                         .setScope(ScopeName.SINGLETON) // 使用@Component及其衍生注解都是单例的
                                         .beanDefinition();
-                                String beanName = generateBeanName(beanDefinition, beanFactory);
+                                String beanName = generateBeanName(beanDefinition);
                                 beanFactory.registerBeanDefinition(beanName, beanDefinition);
                             }
                         }
@@ -59,11 +59,9 @@ public class ComponentScanPostProcessor implements BeanFactoryPostProcessor {
         }
     }
 
-    private static String generateBeanName(BeanDefinition beanDefinition, BeanDefinitionRegistry beanFactory) {
+    private static String generateBeanName(BeanDefinition beanDefinition) {
         String[] split = beanDefinition.getBeanClassName().split("\\.");
-        String trueBeanName = firstLetterToLowerCase(split[split.length - 1]);
-        String[] beanFactoryStringSplit = beanFactory.toString().split("\\.");
-        return trueBeanName + "$" + beanFactoryStringSplit[beanFactoryStringSplit.length - 1];
+        return firstLetterToLowerCase(split[split.length - 1]);
     }
 
     private static String firstLetterToLowerCase(String str) {

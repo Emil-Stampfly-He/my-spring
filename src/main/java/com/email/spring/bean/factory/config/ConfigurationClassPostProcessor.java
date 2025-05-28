@@ -58,7 +58,7 @@ public class ConfigurationClassPostProcessor implements BeanFactoryPostProcessor
                                         if (scope != null) builder.setScope(scope.value());
                                         else builder.setScope(ScopeName.SINGLETON); // 默认设置为单例
 
-                                        String beanName = generateBeanNameWithConfiguration(beanFactory, method, beanNameConfigurationPart, atBean);
+                                        String beanName = generateBeanNameWithConfiguration(method, beanNameConfigurationPart, atBean);
                                         Class<?> beanType = method.getReturnType();
 
                                         BeanDefinition beanDefinition = builder.setBeanClassName(beanName)
@@ -77,24 +77,21 @@ public class ConfigurationClassPostProcessor implements BeanFactoryPostProcessor
         }
     }
 
-    private static String generateBeanNameWithConfiguration(BeanDefinitionRegistry beanFactory,
-                                                            Method method,
+    private static String generateBeanNameWithConfiguration(Method method,
                                                             String beanNameConfigurationPart,
                                                             Bean atBean) {
-        String[] beanFactoryStringSplit = beanFactory.toString().split("\\.");
-        String beanFactoryPart = beanFactoryStringSplit[beanFactoryStringSplit.length - 1];
         String beanName;
         if (beanNameConfigurationPart != null && !beanNameConfigurationPart.isEmpty()) {
             if (!atBean.value().isEmpty()) {
-                beanName = beanNameConfigurationPart + "$" + atBean.value() + "$" + beanFactoryPart;
+                beanName = beanNameConfigurationPart + "$" + atBean.value();
             } else {
-                beanName = beanNameConfigurationPart + "$" + method.getName() + "$" + beanFactoryPart;
+                beanName = beanNameConfigurationPart + "$" + method.getName();
             }
         } else {
             if (!atBean.value().isEmpty()) {
-                beanName = atBean.value() + "$" + beanFactoryPart;
+                beanName = atBean.value();
             } else {
-                beanName = method.getName() + "$" + beanFactoryPart;
+                beanName = method.getName();
             }
         }
         return beanName;

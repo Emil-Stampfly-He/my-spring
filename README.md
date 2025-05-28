@@ -17,6 +17,8 @@
 - [x] `BeanFactoryPostProcessor` for `@ComponentScan`， `@Component` & its derivative annotations
 - [x] `BeanFactoryPostProcessor` for `@Configuration`, `@Bean` & `@Scope`
 - [ ] `BeanPostProcessor` for `@Autowired`
+  - [ ] `postProcessProperties`
+  - [ ] `InjectionMetadata` & `InjectedElements`
 - [ ] `BeanPostProcessor` for `@Resource`
 - [ ] Add `initMethod` & `destroyMethod` for Beans
   - [ ] Getter & setter for `BeanDefinitionBuilder` & `BeanDefinition`

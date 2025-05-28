@@ -1,13 +1,10 @@
 package com.email.spring.test;
 
 import com.email.spring.bean.ScopeName;
-import com.email.spring.bean.annotation.Bean;
-import com.email.spring.bean.annotation.ComponentScan;
-import com.email.spring.bean.annotation.Configuration;
-import com.email.spring.bean.annotation.Scope;
+import com.email.spring.bean.annotation.*;
 
 @ComponentScan(basePackages = {"com.email.spring"})
-@Configuration(name = "goofyConfiguration")
+@Configuration
 public class MyConfig {
     @Bean
     public Bean1 bean1() {
@@ -24,7 +21,7 @@ public class MyConfig {
     public Bean3 bean3() {
         return new Bean3();
     }
-    
+
     public Bean4 bean4() {
         return new Bean4();
     }
