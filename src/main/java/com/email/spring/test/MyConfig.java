@@ -16,7 +16,7 @@ public class MyConfig {
         return new Bean2();
     }
 
-    @Bean(value = "prototypeBean3")
+    @Bean(value = "prototypeBean3", initMethod = "init")
     @Scope(value = ScopeName.PROTOTYPE)
     public Bean3 bean3() {
         return new Bean3();

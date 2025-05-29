@@ -36,14 +36,14 @@ public class JointDebugging {
         ConfigurationClassPostProcessor configurationClassPostProcessor = new ConfigurationClassPostProcessor();
         configurationClassPostProcessor.postProcessBeanDefinitionRegistry(beanFactory);
 
-        // BeanPostProcessor
+        // BeanPostProcessor前置环节
         AutowiredAnnotationPostProcessor autowiredAnnotationPostProcessor = new AutowiredAnnotationPostProcessor();
         autowiredAnnotationPostProcessor.setBeanFactory(beanFactory);
         // 注册BeanPostProcessor，让BeanPostProcessor生效
         beanFactory.addBeanPostProcessor(autowiredAnnotationPostProcessor);
 
         // 初始化Bean
-        beanFactory.initializeBean(Bean1.class.getName());
+        beanFactory.initializeBean();
 
         return beanFactory;
     }

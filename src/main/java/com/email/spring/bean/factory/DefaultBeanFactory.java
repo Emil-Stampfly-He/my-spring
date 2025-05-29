@@ -175,7 +175,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
 
     // TODO: 可能还得改一下initMethodNames数组的问题
     // 调用初始化方法
-    public void initializeBean(String beanName) {
+    public void initializeBean() {
         // 1. 拿到所有BeanDefinition，从而拿到所有beanName和相应的initMethodName
         // 2. 根据beanName拿到bean，使用initMethodName反射地调用相应的初始化方法
         Map<String, String> beanInitMap = new HashMap<>();
@@ -195,9 +195,9 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
                 initMethod.invoke(bean);
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("No such method: " + beanInitMap.get(beanName));
+            throw new RuntimeException("No such init method");
         } catch (InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException("Failed to invoke method: " + beanInitMap.get(beanName));
+            throw new RuntimeException("Failed to invoke init method");
         }
     }
 }
