@@ -18,10 +18,10 @@
 - [x] `BeanFactoryPostProcessor` for `@Configuration`, `@Bean` & `@Scope`
 - [x] `BeanPostProcessor` for `@Autowired`
   - [x] `postProcessBeforeInitialization`
-  - [x] `InjectionMetadata` & `InjectedElements`
+  - [x] `InjectionMetadata` & `InjectedElement`
 - [ ] `BeanPostProcessor` for `@Resource`
 - [ ] Add `initMethod` & `destroyMethod` for Beans
-  - [ ] Getter & setter for `BeanDefinitionBuilder` & `BeanDefinition`
+  - [x] Getter & setter for `BeanDefinitionBuilder` & `BeanDefinition`
   - [ ] Related methods for `BeanFactory`
   - [ ] Support for `@PostConstruct` & `@PreDestroy` together with `@Resource`
   - [ ] `initMethod` & `destroyMethod` attributes in `@Bean`

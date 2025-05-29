@@ -6,6 +6,8 @@ import com.email.spring.bean.factory.config.BeansException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
@@ -13,7 +15,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     private static final Log log = LogFactory.getLog(DefaultBeanFactory.class);
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new HashMap<>();
-    private final Map<String, Object> singletonBeanMap = new HashMap<>();
+    private final Map<String, Object> singletonObject = new HashMap<>();
 
     // Bean依赖图
     private final Map<String, Set<String>> dependenciesForBeanMap = new HashMap<>();
@@ -26,12 +28,12 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
         // 检查是否存在相同的beanName
         Set<String> beanNames = this.beanDefinitionMap.keySet();
-        Set<String> singletonBeanNames = this.singletonBeanMap.keySet();
+        Set<String> singletonBeanNames = this.singletonObject.keySet();
         if (beanNames.contains(beanName)) {
-            log.info("Bean" + beanName + "已存在。现被覆盖。");
+            log.info("Bean" + beanName + "exists, now is covered");
             this.beanDefinitionMap.remove(beanName);
             if (singletonBeanNames.contains(beanName)) {
-                this.singletonBeanMap.remove(beanName);
+                this.singletonObject.remove(beanName);
             }
 
             this.beanDefinitionMap.put(beanName, beanDefinition);
@@ -53,7 +55,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
             } catch (Exception e) {
                 throw new BeansException("Failed to instantiate " + beanClass);
             }
-            this.singletonBeanMap.put(beanName, beanInstance);
+            this.singletonObject.put(beanName, beanInstance);
         }
     }
 
@@ -85,11 +87,11 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     // TODO: getBean方法以后可能需要返回代理对象
     @Override
     public Object getBean(String beanName) {
-        if (this.singletonBeanMap.containsKey(beanName)) {
-            return this.singletonBeanMap.get(beanName);
+        if (this.singletonObject.containsKey(beanName)) {
+            return this.singletonObject.get(beanName);
         }
 
-        BeanDefinition bd = beanDefinitionMap.get(beanName);
+        BeanDefinition bd = this.beanDefinitionMap.get(beanName);
         if (bd == null) {
             throw new NoSuchBeanDefinitionException(beanName);
         }
@@ -109,7 +111,7 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
     @SuppressWarnings("unchecked")
     public <T> T getBean(Class<T> requiredType) {
         // 1. 在单例缓存中寻找
-        for (Object obj : this.singletonBeanMap.values()) {
+        for (Object obj : this.singletonObject.values()) {
             if (requiredType.isInstance(obj)) {
                 return (T) obj;
             }
@@ -152,12 +154,12 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
 
     @Override
     public boolean isSingleton(String beanName) {
-        return this.singletonBeanMap.containsKey(beanName);
+        return this.singletonObject.containsKey(beanName);
     }
 
     @Override
     public boolean isPrototype(String beanName) {
-        return !this.singletonBeanMap.containsKey(beanName);
+        return !this.singletonObject.containsKey(beanName);
     }
 
     // 用于将beanFactory中的所有Bean都经过Bean后处理器进行处理
@@ -166,8 +168,36 @@ public class DefaultBeanFactory implements BeanFactory, BeanDefinitionRegistry {
         for (BeanPostProcessor bp : this.beanPostProcessors) {
             this.beanDefinitionMap.forEach(
                     (beanName, beanDefinition)
-                            -> bp.postProcessBeforeInitialization(this.getBean(beanName), beanDefinition.getBeanClassName())
-            );
+                            -> bp.postProcessBeforeInitialization(this.getBean(beanName), beanDefinition.getBeanClassName()));
+
+        }
+    }
+
+    // TODO: 可能还得改一下initMethodNames数组的问题
+    // 调用初始化方法
+    public void initializeBean(String beanName) {
+        // 1. 拿到所有BeanDefinition，从而拿到所有beanName和相应的initMethodName
+        // 2. 根据beanName拿到bean，使用initMethodName反射地调用相应的初始化方法
+        Map<String, String> beanInitMap = new HashMap<>();
+        for (Map.Entry<String, BeanDefinition> entry : this.beanDefinitionMap.entrySet()) {
+            if (entry.getValue().getInitMethodName() == null) continue;
+            beanInitMap.put(entry.getKey(), entry.getValue().getInitMethodName());
+        }
+
+        try {
+            for (Map.Entry<String, String> entry : beanInitMap.entrySet()) {
+                Object bean = this.getBean(entry.getKey());
+                String initMethodName = entry.getValue();
+                if (initMethodName.isEmpty()) continue;
+
+                Method initMethod = bean.getClass().getDeclaredMethod(initMethodName);
+                initMethod.setAccessible(true);
+                initMethod.invoke(bean);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException("No such method: " + beanInitMap.get(beanName));
+        } catch (InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to invoke method: " + beanInitMap.get(beanName));
         }
     }
 }

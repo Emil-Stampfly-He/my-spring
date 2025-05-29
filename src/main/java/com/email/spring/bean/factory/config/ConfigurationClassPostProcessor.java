@@ -60,9 +60,13 @@ public class ConfigurationClassPostProcessor implements BeanFactoryPostProcessor
 
                                         String beanName = generateBeanNameWithConfiguration(method, beanNameConfigurationPart, atBean);
                                         Class<?> beanType = method.getReturnType();
+                                        String initMethod = atBean.initMethod();
+                                        String destroyMethod = atBean.destroyMethod();
 
                                         BeanDefinition beanDefinition = builder.setBeanClassName(beanName)
                                                 .setBeanClass(beanType)
+                                                .setInitMethod(initMethod)
+                                                .setDestroyMethod(destroyMethod)
                                                 .beanDefinition();
                                         beanFactory.registerBeanDefinition(beanName, beanDefinition);
                                     }

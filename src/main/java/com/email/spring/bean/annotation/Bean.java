@@ -10,6 +10,10 @@ public @interface Bean {
     // @Bean("customBeanName")
     String value() default "";
 
-    // TODO: 未来可以添加 initMethod 和 destroyMethod
-    // TODO: 包括和 @Primary 一起作用
+    // 用于指定Bean初始化方法的名字
+    String initMethod() default "";
+
+    String destroyMethod() default "";
+
+    // TODO: 未来可以和 @Primary 一起作用
 }

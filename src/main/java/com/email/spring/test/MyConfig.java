@@ -6,7 +6,7 @@ import com.email.spring.bean.annotation.*;
 @ComponentScan(basePackages = {"com.email.spring"})
 @Configuration
 public class MyConfig {
-    @Bean
+    @Bean(initMethod = "init")
     public Bean1 bean1() {
         return new Bean1();
     }

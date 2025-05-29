@@ -77,7 +77,7 @@ public class AutowiredAnnotationPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
-    // TODO
+    // TODO: 生成代理对象的关键方法（关键时机）
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 

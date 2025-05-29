@@ -10,6 +10,12 @@ public interface BeanDefinition {
     void setScope(ScopeName scope);
     String getScope();
 
+    void setInitMethodName(String initMethodName);
+    String getInitMethodName();
+
+    void setDestroyMethodName(String destroyMethodName);
+    String getDestroyMethodName();
+
     boolean isSingleton();
     boolean isPrototype();
 }

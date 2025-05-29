@@ -31,4 +31,14 @@ public record BeanDefinitionBuilder(BeanDefinition beanDefinition) {
         this.beanDefinition.setScope(scope);
         return this;
     }
+
+    public BeanDefinitionBuilder setInitMethod(String initMethod) {
+        this.beanDefinition.setInitMethodName(initMethod);
+        return this;
+    }
+
+    public BeanDefinitionBuilder setDestroyMethod(String destroyMethod) {
+        this.beanDefinition.setDestroyMethodName(destroyMethod);
+        return this;
+    }
 }

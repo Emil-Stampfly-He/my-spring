@@ -16,6 +16,8 @@ public class JointDebugging {
 
         MyController myController = beanFactory.getBean(MyController.class);
         System.out.println(myController.getBean1());
+        System.out.println(myController.getBean2());
+        System.out.println(myController.getBean4()); // null
         System.out.println();
 
         Field beanDefinitionMap = beanFactory.getClass().getDeclaredField("beanDefinitionMap");
@@ -39,6 +41,9 @@ public class JointDebugging {
         autowiredAnnotationPostProcessor.setBeanFactory(beanFactory);
         // 注册BeanPostProcessor，让BeanPostProcessor生效
         beanFactory.addBeanPostProcessor(autowiredAnnotationPostProcessor);
+
+        // 初始化Bean
+        beanFactory.initializeBean(Bean1.class.getName());
 
         return beanFactory;
     }
